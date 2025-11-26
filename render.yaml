@@ -19,8 +19,9 @@ services:
       mountPath: /data
       sizeGB: 1
 
-  - type: static_site
+  - type: web
     name: smart-restaurant-frontend
+    env: static
     plan: free
     buildCommand: cd restaurant-ordering/frontend && npm install && npm run build
     publishPath: restaurant-ordering/frontend/build
