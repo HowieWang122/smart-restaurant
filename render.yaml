@@ -19,11 +19,12 @@ services:
       mountPath: /data
       sizeGB: 1
 
-staticSites:
-  - name: smart-restaurant-frontend
+  - type: web
+    name: smart-restaurant-frontend
+    env: static
     plan: free
     buildCommand: cd restaurant-ordering/frontend && npm install && npm run build
-    publishPath: restaurant-ordering/frontend/build
+    staticPublishPath: restaurant-ordering/frontend/build
     envVars:
       - key: REACT_APP_API_URL
         fromService:
