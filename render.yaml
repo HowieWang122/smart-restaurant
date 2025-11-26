@@ -20,10 +20,4 @@ services:
     plan: free
     buildCommand: cd restaurant-ordering/frontend && npm install && npm run build
     staticPublishPath: restaurant-ordering/frontend/build
-    envVars:
-      - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: smart-restaurant-backend
-          property: service.url
 
