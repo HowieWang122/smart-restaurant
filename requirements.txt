@@ -1,5 +1,9 @@
 # Smart Restaurant Integrated System Dependencies
 
+# Build helpers
+setuptools>=68
+wheel>=0.41
+
 # GUI Framework
 PyQt5==5.15.9
 
