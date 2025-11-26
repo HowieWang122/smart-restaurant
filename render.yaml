@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: smart-restaurant-backend
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: cd restaurant-ordering/backend && npm install
+    startCommand: cd restaurant-ordering/backend && npm start
+    runtime: node
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATA_DIR
+        value: /data/storage
+    disk:
+      name: backend-data
+      mountPath: /data
+      sizeGB: 1
+
+  - type: static
+    name: smart-restaurant-frontend
+    env: static
+    plan: free
+    buildCommand: cd restaurant-ordering/frontend && npm install && npm run build
+    publishPath: restaurant-ordering/frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: smart-restaurant-backend
+          property: service.url
+

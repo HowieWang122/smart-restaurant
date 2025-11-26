@@ -1,0 +1,65 @@
+{
+  "userDiscounts": {
+    "1751540903038": {
+      "discountedItems": [
+        {
+          "id": 18,
+          "name": "地三鲜",
+          "originalPrice": 32,
+          "discountedPrice": 22,
+          "discountRate": 70,
+          "savedAmount": 10
+        },
+        {
+          "id": 9,
+          "name": "水煮牛肉",
+          "originalPrice": 68,
+          "discountedPrice": 47,
+          "discountRate": 70,
+          "savedAmount": 21
+        },
+        {
+          "id": 7,
+          "name": "口水鸡",
+          "originalPrice": 38,
+          "discountedPrice": 30,
+          "discountRate": 80,
+          "savedAmount": 8
+        }
+      ],
+      "lastRefreshDate": "Thu Jul 03 2025",
+      "refreshCount": 1,
+      "lastRefreshTime": "2025-07-03T11:25:06.367Z",
+      "lastRefreshBy": "Kristy"
+    }
+  },
+  "globalLastCheck": "Thu Jul 03 2025",
+  "discountedItems": [
+    {
+      "id": 3,
+      "name": "回锅肉",
+      "originalPrice": 38,
+      "discountedPrice": 22,
+      "discountRate": 60,
+      "savedAmount": 16
+    },
+    {
+      "id": 6,
+      "name": "辣子鸡",
+      "originalPrice": 48,
+      "discountedPrice": 33,
+      "discountRate": 70,
+      "savedAmount": 15
+    },
+    {
+      "id": 17,
+      "name": "麻婆豆腐",
+      "originalPrice": 28,
+      "discountedPrice": 19,
+      "discountRate": 70,
+      "savedAmount": 9
+    }
+  ],
+  "lastRefreshDate": "Thu Jul 03 2025",
+  "refreshCount": 0
+}

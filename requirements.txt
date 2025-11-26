@@ -1,0 +1,29 @@
+# Smart Restaurant Integrated System Dependencies
+
+# GUI Framework
+PyQt5==5.15.9
+
+# Image Processing and Computer Vision
+opencv-python==4.8.1.78
+numpy==1.24.3
+
+# Barcode Recognition
+pyzbar==0.1.9
+python-barcode==0.15.1
+
+# QR Code Generation
+qrcode==7.4.2
+
+# Image Format Support
+Pillow==10.0.1
+
+# HTTP Requests
+requests==2.31.0
+
+# Optional: Audio Processing (for advanced sound features)
+# pygame==2.5.2
+
+# Optional: Database Support (future expansion)
+# sqlite3  # Built into Python
+# pymongo==4.5.0  # MongoDB support
+# mysql-connector-python==8.1.0  # MySQL support 

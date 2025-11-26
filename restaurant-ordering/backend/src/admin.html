@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kristy专属大饭店 - 管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #fef3e2 0%, #fdf2f8 25%, #f3e8ff 50%, #ede9fe 75%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        /* 头部导航 */
+        .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-title h1 {
+            color: #f97316;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .back-btn:hover {
+            background: #ea580c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-card h3 {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: 0.025em;
+        }
+        
+        .stat-card .value {
+            color: #f97316;
+            font-size: 36px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        
+        .orders-table {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #f97316;
+            color: white;
+            padding: 18px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.025em;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.processing {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status.completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status.cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .action-btn {
+            padding: 6px 16px;
+            margin: 0 3px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .action-btn.process {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .action-btn.complete {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .action-btn.cancel {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .action-btn.delete {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .order-items {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .customer-info {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .no-orders {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.4);
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .refresh-btn:hover {
+            background: #ea580c;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 20px 40px -10px rgba(249, 115, 22, 0.5);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #6b7280;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: #f97316;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+        
+        .tab-btn:hover:not(.active) {
+            background: rgba(249, 115, 22, 0.1);
+            color: #f97316;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .recharge-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .recharge-status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .recharge-status.approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .recharge-status.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .role {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .role.admin {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .role.user {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        
+        /* 自定义输入模态框样式 - 仿前端设计 */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 16px;
+        }
+        
+        .custom-modal-content {
+            background-color: white;
+            margin: 0 auto;
+            padding: 24px;
+            border: none;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 448px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .custom-modal h2 {
+            margin: 0 0 16px 0;
+            color: #db2777;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 32px;
+        }
+        
+        .custom-modal-subtitle {
+            color: #4b5563;
+            margin-bottom: 24px;
+            font-size: 16px;
+            line-height: 24px;
+        }
+        
+        .custom-modal-input-group {
+            margin-bottom: 16px;
+        }
+        
+        .custom-modal-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 4px;
+            line-height: 20px;
+        }
+        
+        .custom-modal-input-wrapper {
+            position: relative;
+        }
+        
+        .custom-modal-input {
+            width: 100%;
+            padding: 8px 12px;
+            padding-right: 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 24px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease-in-out;
+        }
+        
+        .custom-modal-input:focus {
+            border-color: #ec4899;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+        
+        .custom-modal-heart-icon {
+            position: absolute;
+            right: 12px;
+            top: 8px;
+            color: #ec4899;
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 24px;
+        }
+        
+        .custom-modal-preview {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+            line-height: 20px;
+        }
+        
+        .custom-modal-notice {
+            margin: 24px 0;
+            background-color: #fefce8;
+            border: 1px solid #fde047;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .custom-modal-notice p {
+            font-size: 14px;
+            color: #a16207;
+            margin: 0;
+            line-height: 20px;
+        }
+        
+        .custom-modal-notice .notice-title {
+            font-weight: 600;
+        }
+        
+        .custom-modal-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .custom-modal-buttons button {
+            flex: 1;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 20px;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .custom-modal-cancel {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        
+        .custom-modal-confirm {
+            background-color: #ec4899;
+            color: white;
+        }
+        
+        .custom-modal-cancel:hover {
+            background-color: #d1d5db;
+        }
+        
+        .custom-modal-confirm:hover {
+            background-color: #db2777;
+        }
+        
+        .custom-modal-cancel:disabled,
+        .custom-modal-confirm:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- 管理后台头部 -->
+    <header class="admin-header">
+        <div class="header-content">
+            <div class="header-title">
+                <div style="font-size: 32px;">🍽️</div>
+                <h1>Kristy专属大饭店 管理后台</h1>
+                <div style="font-size: 24px;">👑</div>
+            </div>
+            <div class="header-actions">
+                <span id="adminUserStatus" style="color: #f97316; margin-right: 16px; font-weight: 600;">未登录</span>
+                <button type="button" class="back-btn" style="background:#ec4899;" onclick="forceRelogin()">
+                    <span>🔐</span>
+                    重新登录
+                </button>
+                <a href="http://localhost:3000" class="back-btn">
+                    <span>👈</span>
+                    返回前端
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        
+        <div class="nav-tabs" style="margin-bottom: 20px;">
+            <button class="tab-btn active" onclick="showTab('orders')">订单管理</button>
+            <button class="tab-btn" onclick="showTab('recharge')">充值申请</button>
+            <button class="tab-btn" onclick="showTab('users')">用户管理</button>
+        </div>
+        
+        <!-- 订单管理标签页 -->
+        <div id="orders-tab" class="tab-content active">
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>待处理订单</h3>
+                    <div class="value" id="pendingCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>处理中订单</h3>
+                    <div class="value" id="processingCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>已完成订单</h3>
+                    <div class="value" id="completedCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>今日总金额</h3>
+                    <div class="value" id="totalAmount">💓0</div>
+                </div>
+            </div>
+            
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>订单号</th>
+                            <th>用户名</th>
+                            <th>下单时间</th>
+                            <th>订单要求</th>
+                            <th>订单内容</th>
+                            <th>总金额</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- 订单数据将在这里动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 充值申请标签页 -->
+        <div id="recharge-tab" class="tab-content">
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>待审核申请</h3>
+                    <div class="value" id="pendingRechargeCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>已批准申请</h3>
+                    <div class="value" id="approvedRechargeCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>已拒绝申请</h3>
+                    <div class="value" id="rejectedRechargeCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>当前心动值</h3>
+                    <div class="value" id="currentHeartValue">💓0</div>
+                </div>
+            </div>
+            
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>申请号</th>
+                            <th>用户名</th>
+                            <th>申请时间</th>
+                            <th>充值金额</th>
+                            <th>状态</th>
+                            <th>处理时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rechargeTableBody">
+                        <!-- 充值申请数据将在这里动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 用户管理标签页 -->
+        <div id="users-tab" class="tab-content">
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>总用户数</h3>
+                    <div class="value" id="totalUsersCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>管理员数</h3>
+                    <div class="value" id="adminUsersCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>普通用户数</h3>
+                    <div class="value" id="regularUsersCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>总心动值</h3>
+                    <div class="value" id="totalHeartValue">💓0</div>
+                </div>
+            </div>
+            
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>用户ID</th>
+                            <th>用户名</th>
+                            <th>密码哈希</th>
+                            <th>角色</th>
+                            <th>心动值</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- 用户数据将在这里动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px;">
+                <p style="margin: 0; color: #856404; font-size: 14px;">
+                    <strong>⚠️ 安全提示：</strong>此页面显示用户密码哈希信息，仅供管理员调试使用。在生产环境中应移除此功能以确保安全。
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <button class="refresh-btn" onclick="loadOrders()">刷新订单</button>
+    
+    <!-- 编辑用户模态框 -->
+    <div id="editUserModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h2>编辑用户信息</h2>
+            <p class="custom-modal-subtitle" id="editUserSubtitle">修改用户的基本信息</p>
+            
+            <div class="custom-modal-input-group">
+                <label class="custom-modal-label">用户名</label>
+                <input type="text" id="editUsername" class="custom-modal-input" placeholder="请输入用户名" />
+            </div>
+            
+            <div class="custom-modal-input-group">
+                <label class="custom-modal-label">新密码</label>
+                <input type="password" id="editPassword" class="custom-modal-input" placeholder="留空则不修改密码" />
+            </div>
+            
+            <div class="custom-modal-input-group">
+                <label class="custom-modal-label">心动值</label>
+                <div class="custom-modal-input-wrapper">
+                    <input type="text" id="editHeartValue" class="custom-modal-input" placeholder="请输入心动值" />
+                    <span class="custom-modal-heart-icon">💓</span>
+                </div>
+            </div>
+
+            <div id="editUserError" style="color: #dc3545; font-size: 14px; margin: 8px 0; display: none;"></div>
+
+            <div class="custom-modal-buttons">
+                <button type="button" class="custom-modal-cancel" onclick="closeEditUserModal()">取消</button>
+                <button type="button" class="custom-modal-confirm" onclick="saveUserChanges()">保存修改</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 自定义数字输入模态框 -->
+    <div id="customNumberModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h2 id="modalTitle">拒绝充值申请</h2>
+            <p class="custom-modal-subtitle" id="modalMessage">如果要拒绝并提供允许的金额，请在下方输入：</p>
+            
+            <div class="custom-modal-input-group">
+                <label class="custom-modal-label">
+                    充值金额 * (仅限数字)
+                </label>
+                <div class="custom-modal-input-wrapper">
+                    <input type="text" id="modalInput" class="custom-modal-input" placeholder="请输入充值金额" />
+                    <span class="custom-modal-heart-icon">💓</span>
+                </div>
+                <div id="modalPreview" class="custom-modal-preview"></div>
+            </div>
+
+            <div class="custom-modal-notice">
+                <p>
+                    <span class="notice-title">注意：</span>
+                    留空或输入0将直接拒绝申请。输入数字将批准该金额的充值。
+                </p>
+            </div>
+
+            <div class="custom-modal-buttons">
+                <button type="button" class="custom-modal-cancel" onclick="closeCustomModal(false)">取消</button>
+                <button type="button" class="custom-modal-confirm" onclick="closeCustomModal(true)">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE_URL = window.location.origin;
+        let adminToken = localStorage.getItem('adminAuthToken') || null;
+        let adminUser = null;
+        const storedAdminUser = localStorage.getItem('adminUserInfo');
+        if (storedAdminUser) {
+            try {
+                adminUser = JSON.parse(storedAdminUser);
+            } catch (error) {
+                adminUser = null;
+                localStorage.removeItem('adminUserInfo');
+            }
+        }
+
+        function updateAdminUserStatus() {
+            const statusLabel = document.getElementById('adminUserStatus');
+            if (!statusLabel) {
+                return;
+            }
+            if (adminUser && adminUser.username) {
+                statusLabel.textContent = `管理员：${adminUser.username}`;
+                statusLabel.style.color = '#16a34a';
+            } else {
+                statusLabel.textContent = '未登录';
+                statusLabel.style.color = '#dc2626';
+            }
+        }
+
+        updateAdminUserStatus();
+
+        async function ensureAdminLogin(force = false) {
+            if (force) {
+                adminToken = null;
+                adminUser = null;
+                localStorage.removeItem('adminAuthToken');
+                localStorage.removeItem('adminUserInfo');
+                updateAdminUserStatus();
+            }
+
+            if (adminToken && !force) {
+                return adminToken;
+            }
+
+            while (true) {
+                const username = prompt('请输入管理员用户名');
+                if (username === null) {
+                    throw new Error('管理员登录已取消');
+                }
+
+                const password = prompt('请输入管理员密码');
+                if (password === null || password.trim() === '') {
+                    alert('密码不能为空');
+                    continue;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: username.trim(), password: password.trim() })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        alert(errorData.message || '登录失败，请重试');
+                        continue;
+                    }
+
+                    const data = await response.json();
+                    if (!data.user || !data.user.isAdmin) {
+                        alert('必须使用管理员账号登录');
+                        continue;
+                    }
+
+                    adminToken = data.token;
+                    adminUser = data.user;
+                    localStorage.setItem('adminAuthToken', adminToken);
+                    localStorage.setItem('adminUserInfo', JSON.stringify(adminUser));
+                    updateAdminUserStatus();
+                    return adminToken;
+                } catch (error) {
+                    alert('登录请求失败，请检查网络后重试');
+                }
+            }
+        }
+
+        async function adminFetch(path, options = {}, retry = true) {
+            const token = await ensureAdminLogin();
+            const fetchOptions = {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    ...(options.headers || {})
+                }
+            };
+
+            if (fetchOptions.body && !fetchOptions.headers['Content-Type']) {
+                fetchOptions.headers['Content-Type'] = 'application/json';
+            }
+
+            const response = await fetch(`${API_BASE_URL}${path}`, fetchOptions);
+
+            if (response.status === 401 && retry) {
+                await ensureAdminLogin(true);
+                return adminFetch(path, options, false);
+            }
+
+            return response;
+        }
+
+        function forceRelogin() {
+            ensureAdminLogin(true)
+                .then(() => bootstrapAdminPanel())
+                .catch(error => {
+                    console.error('重新登录失败:', error);
+                });
+        }
+
+        async function bootstrapAdminPanel() {
+            try {
+                await ensureAdminLogin();
+                await Promise.allSettled([
+                    loadOrders(),
+                    loadHeartValue(),
+                    loadRechargeRequests(),
+                    loadUsers()
+                ]);
+            } catch (error) {
+                console.error('初始化管理后台失败:', error);
+            }
+        }
+
+        let autoRefreshTimer = null;
+        function startAutoRefresh() {
+            if (autoRefreshTimer) {
+                clearInterval(autoRefreshTimer);
+            }
+
+            autoRefreshTimer = setInterval(async () => {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) {
+                    return;
+                }
+
+                try {
+                    if (activeTab.id === 'orders-tab') {
+                        await loadOrders();
+                    } else if (activeTab.id === 'recharge-tab') {
+                        await loadRechargeRequests();
+                        await loadHeartValue();
+                    } else if (activeTab.id === 'users-tab') {
+                        await loadUsers();
+                    }
+                } catch (error) {
+                    console.error('自动刷新失败:', error);
+                }
+            }, 30000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            bootstrapAdminPanel();
+            startAutoRefresh();
+        });
+
+        let orders = [];
+        let rechargeRequests = [];
+        let users = [];
+        let currentHeartValue = 0;
+        let currentModalResolve = null;
+        
+        // 状态映射
+        const statusMap = {
+            'pending': '待处理',
+            'processing': '处理中',
+            'completed': '已完成',
+            'cancelled': '已取消'
+        };
+        
+        // 充值申请状态映射
+        const rechargeStatusMap = {
+            'pending': '待审核',
+            'approved': '已批准',
+            'rejected': '已拒绝'
+        };
+        
+        // 自定义数字输入模态框
+        function showCustomNumberModal(title, message, defaultValue = '', originalAmount = 0) {
+            return new Promise((resolve) => {
+                currentModalResolve = resolve;
+                
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalMessage').textContent = message;
+                document.getElementById('modalInput').value = defaultValue;
+                document.getElementById('customNumberModal').style.display = 'block';
+                
+                // 更新预览
+                updateModalPreview(defaultValue, originalAmount);
+                
+                // 聚焦到输入框
+                setTimeout(() => {
+                    document.getElementById('modalInput').focus();
+                }, 100);
+            });
+        }
+        
+        // 更新模态框预览
+        function updateModalPreview(value, originalAmount) {
+            const previewElement = document.getElementById('modalPreview');
+            if (value && value !== '0') {
+                const amount = parseInt(value);
+                if (!isNaN(amount) && amount > 0) {
+                    previewElement.textContent = `将批准充值：💓${amount} (原申请：💓${originalAmount})`;
+                } else {
+                    previewElement.textContent = '';
+                }
+            } else {
+                previewElement.textContent = value === '0' ? '将直接拒绝申请' : '';
+            }
+        }
+        
+        function closeCustomModal(confirmed) {
+            const modal = document.getElementById('customNumberModal');
+            const input = document.getElementById('modalInput');
+            const preview = document.getElementById('modalPreview');
+            
+            modal.style.display = 'none';
+            
+            if (currentModalResolve) {
+                if (confirmed) {
+                    currentModalResolve(input.value.trim());
+                } else {
+                    currentModalResolve(null);
+                }
+                currentModalResolve = null;
+            }
+            
+            // 清空输入框和预览
+            input.value = '';
+            preview.textContent = '';
+            modalOriginalAmount = 0;
+        }
+        
+        // 实时数字过滤
+        let modalOriginalAmount = 0;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalInput = document.getElementById('modalInput');
+            
+            modalInput.addEventListener('input', function(e) {
+                // 只保留数字
+                const value = e.target.value;
+                const filteredValue = value.replace(/[^\d]/g, '');
+                
+                if (value !== filteredValue) {
+                    e.target.value = filteredValue;
+                }
+                
+                // 更新预览
+                updateModalPreview(filteredValue, modalOriginalAmount);
+            });
+            
+            // Enter键确认
+            modalInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    closeCustomModal(true);
+                }
+            });
+            
+            // ESC键取消
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('customNumberModal').style.display === 'block') {
+                    closeCustomModal(false);
+                }
+            });
+            
+            // 点击模态框外部关闭
+            document.getElementById('customNumberModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeCustomModal(false);
+                }
+            });
+            
+            // 阻止模态框内容区域的点击事件冒泡
+            document.querySelector('.custom-modal-content').addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 编辑用户模态框键盘事件
+            document.getElementById('editUsername').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('editPassword').focus();
+                }
+            });
+            
+            document.getElementById('editPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('editHeartValue').focus();
+                }
+            });
+            
+            document.getElementById('editHeartValue').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveUserChanges();
+                }
+            });
+            
+            // 编辑用户模态框点击外部关闭
+            document.getElementById('editUserModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEditUserModal();
+                }
+            });
+            
+            // 心动值输入框只允许数字
+            document.getElementById('editHeartValue').addEventListener('input', function(e) {
+                const value = e.target.value;
+                const filteredValue = value.replace(/[^\d]/g, '');
+                if (value !== filteredValue) {
+                    e.target.value = filteredValue;
+                }
+            });
+        });
+        
+        // 标签页切换
+        function showTab(tabName) {
+            // 隐藏所有标签页内容
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 移除所有按钮的active类
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 显示选中的标签页
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // 激活对应的按钮
+            event.target.classList.add('active');
+            
+            // 根据标签页加载对应数据
+            if (tabName === 'orders') {
+                loadOrders();
+            } else if (tabName === 'recharge') {
+                loadRechargeRequests();
+                loadHeartValue();
+            } else if (tabName === 'users') {
+                loadUsers();
+            }
+        }
+        
+        // 加载订单
+        async function loadOrders() {
+            try {
+                const response = await adminFetch('/api/orders');
+                orders = await response.json();
+                renderOrders();
+                updateStats();
+            } catch (error) {
+                console.error('加载订单失败:', error);
+                alert('加载订单失败，请检查服务器是否运行');
+            }
+        }
+        
+        // 渲染订单表格
+        function renderOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-orders">暂无订单</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .map(order => `
+                    <tr>
+                        <td>#${order.id}</td>
+                        <td><strong style="color: #f97316;">${order.username || 'unknown'}</strong></td>
+                        <td>${new Date(order.createdAt).toLocaleString('zh-CN')}</td>
+                        <td class="customer-info">
+                            <strong>口味：${order.customerInfo.taste}</strong><br>
+                            期望时间：${order.customerInfo.expectedTime}
+                            ${order.customerInfo.notes ? '<br>备注：' + order.customerInfo.notes : ''}
+                        </td>
+                        <td class="order-items">
+                            ${order.items.map(item => `${item.name} x ${item.quantity}`).join('<br>')}
+                        </td>
+                        <td><strong>💓${order.total}</strong></td>
+                        <td><span class="status ${order.status}">${statusMap[order.status]}</span></td>
+                        <td>
+                            ${getActionButtons(order)}
+                        </td>
+                    </tr>
+                `).join('');
+        }
+        
+        // 获取操作按钮
+        function getActionButtons(order) {
+            let buttons = '';
+            
+            switch(order.status) {
+                case 'pending':
+                    buttons = `
+                        <button class="action-btn process" onclick="updateOrderStatus(${order.id}, 'processing')">开始处理</button>
+                        <button class="action-btn cancel" onclick="updateOrderStatus(${order.id}, 'cancelled')">取消</button>
+                    `;
+                    break;
+                case 'processing':
+                    buttons = `
+                        <button class="action-btn complete" onclick="updateOrderStatus(${order.id}, 'completed')">完成</button>
+                        <button class="action-btn cancel" onclick="updateOrderStatus(${order.id}, 'cancelled')">取消</button>
+                    `;
+                    break;
+                case 'completed':
+                case 'cancelled':
+                    // 只有已完成或已取消的订单才显示删除按钮
+                    buttons = `<button class="action-btn delete" onclick="deleteOrder(${order.id}, '${order.customerInfo.taste}')">永久删除</button>`;
+                    break;
+                default:
+                    buttons = '';
+            }
+            
+            return buttons || '-';
+        }
+        
+        // 更新订单状态
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const response = await adminFetch(`/api/orders/${orderId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (response.ok) {
+                    loadOrders();
+                } else {
+                    alert('更新状态失败');
+                }
+            } catch (error) {
+                console.error('更新状态失败:', error);
+                alert('更新状态失败');
+            }
+        }
+        
+        // 删除订单（永久删除）
+        async function deleteOrder(orderId, customerTaste) {
+            // 二次确认
+            const confirmDelete = confirm(`确定要永久删除订单 #${orderId} (口味: ${customerTaste}) 吗？\n\n⚠️ 此操作不可撤销，订单将从数据库中永久删除！`);
+            
+            if (!confirmDelete) {
+                return;
+            }
+            
+            try {
+                const response = await adminFetch(`/api/orders/${orderId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('订单已永久删除');
+                    loadOrders(); // 重新加载订单列表
+                } else {
+                    const errorData = await response.json();
+                    alert('删除失败: ' + (errorData.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('删除订单失败:', error);
+                alert('删除订单失败，请检查网络连接');
+            }
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            const today = new Date().toDateString();
+            const todayOrders = orders.filter(order => new Date(order.createdAt).toDateString() === today);
+            
+            const pendingCount = orders.filter(order => order.status === 'pending').length;
+            const processingCount = orders.filter(order => order.status === 'processing').length;
+            const completedCount = orders.filter(order => order.status === 'completed').length;
+            const totalAmount = todayOrders.reduce((sum, order) => sum + order.total, 0);
+            
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('processingCount').textContent = processingCount;
+            document.getElementById('completedCount').textContent = completedCount;
+            document.getElementById('totalAmount').textContent = `💓${totalAmount}`;
+        }
+        
+        // 加载心动值
+        async function loadHeartValue() {
+            try {
+                const response = await adminFetch('/api/heart-value');
+                const data = await response.json();
+                currentHeartValue = data.heartValue;
+                document.getElementById('currentHeartValue').textContent = `💓${currentHeartValue}`;
+            } catch (error) {
+                console.error('加载心动值失败:', error);
+            }
+        }
+        
+        // 加载充值申请
+        async function loadRechargeRequests() {
+            try {
+                const response = await adminFetch('/api/recharge-requests');
+                rechargeRequests = await response.json();
+                renderRechargeRequests();
+                updateRechargeStats();
+            } catch (error) {
+                console.error('加载充值申请失败:', error);
+                alert('加载充值申请失败，请检查服务器是否运行');
+            }
+        }
+        
+        // 渲染充值申请表格
+        function renderRechargeRequests() {
+            const tbody = document.getElementById('rechargeTableBody');
+            
+            if (rechargeRequests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-orders">暂无充值申请</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = rechargeRequests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .map(request => `
+                    <tr>
+                        <td>#${request.id}</td>
+                        <td><strong style="color: #f97316;">${request.username || 'unknown'}</strong></td>
+                        <td>${new Date(request.createdAt).toLocaleString('zh-CN')}</td>
+                        <td>
+                            <strong>💓${request.amount}</strong>
+                            ${request.actualAmount && request.actualAmount !== request.amount 
+                                ? `<br><small style="color: #28a745;">实际: 💓${request.actualAmount}</small>` 
+                                : ''
+                            }
+                        </td>
+                        <td><span class="recharge-status ${request.status}">${rechargeStatusMap[request.status]}</span></td>
+                        <td>${request.processedAt ? new Date(request.processedAt).toLocaleString('zh-CN') : '-'}</td>
+                        <td>
+                            ${getRechargeActionButtons(request)}
+                        </td>
+                    </tr>
+                `).join('');
+        }
+        
+        // 获取充值申请操作按钮
+        function getRechargeActionButtons(request) {
+            let buttons = '';
+            
+            if (request.status === 'pending') {
+                buttons = `
+                    <button class="action-btn complete" onclick="processRechargeRequest(${request.id}, 'approved', ${request.amount})">批准</button>
+                    <button class="action-btn cancel" onclick="handleRechargeReject(${request.id}, ${request.amount})">拒绝</button>
+                `;
+            } else if (request.status === 'approved' || request.status === 'rejected') {
+                // 只有已批准或已拒绝的申请才显示删除按钮
+                buttons = `<button class="action-btn delete" onclick="deleteRechargeRequest(${request.id}, '${request.amount}')">永久删除</button>`;
+            }
+            
+            return buttons || '-';
+        }
+        
+        // 处理充值申请拒绝（支持输入允许金额）
+        async function handleRechargeReject(requestId, originalAmount) {
+            try {
+                // 设置全局变量供预览使用
+                modalOriginalAmount = originalAmount;
+                
+                const allowedAmountInput = await showCustomNumberModal(
+                    '拒绝充值申请',
+                    `原申请金额：💓${originalAmount}`,
+                    '',
+                    originalAmount
+                );
+                
+                // 用户取消了操作
+                if (allowedAmountInput === null) {
+                    return;
+                }
+                
+                const trimmedInput = allowedAmountInput.trim();
+                
+                // 如果为空或0，直接拒绝
+                if (trimmedInput === '' || trimmedInput === '0') {
+                    const confirmReject = confirm('确定要拒绝这个充值申请吗？');
+                    if (confirmReject) {
+                        await processRechargeRequest(requestId, 'rejected', originalAmount);
+                    }
+                    return;
+                }
+                
+                const allowedAmount = parseInt(trimmedInput);
+                
+                if (allowedAmount <= 0) {
+                    alert('充值金额必须大于0！');
+                    return;
+                }
+                
+                if (allowedAmount > 999999) {
+                    alert('充值金额不能超过999999！');
+                    return;
+                }
+                
+                // 使用允许的金额批准
+                const confirmApprove = confirm(`确定要批准💓${allowedAmount}的充值吗？\n（原申请金额：💓${originalAmount}）`);
+                if (confirmApprove) {
+                    await processRechargeRequest(requestId, 'approved', allowedAmount);
+                }
+            } catch (error) {
+                console.error('处理充值申请时发生错误:', error);
+            }
+        }
+
+        // 处理充值申请
+        async function processRechargeRequest(requestId, status, amount) {
+            const action = status === 'approved' ? '批准' : '拒绝';
+            
+            try {
+                const requestBody = { 
+                    status, 
+                    processedBy: '管理员'
+                };
+                
+                // 如果是批准且提供了自定义金额，添加到请求中
+                if (status === 'approved' && amount !== undefined) {
+                    requestBody.approvedAmount = amount;
+                }
+                
+                const response = await adminFetch(`/api/recharge-requests/${requestId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (response.ok) {
+                    const responseData = await response.json();
+                    if (status === 'approved' && amount !== undefined) {
+                        alert(`申请已批准！实际充值金额：💓${amount}`);
+                    } else {
+                        alert(`申请已${action}`);
+                    }
+                    loadRechargeRequests();
+                    loadHeartValue(); // 刷新心动值显示
+                } else {
+                    const errorData = await response.json();
+                    alert(`${action}失败: ` + (errorData.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error(`${action}申请失败:`, error);
+                alert(`${action}申请失败，请检查网络连接`);
+            }
+        }
+        
+        // 删除充值申请记录（永久删除）
+        async function deleteRechargeRequest(requestId, amount) {
+            // 二次确认
+            const confirmDelete = confirm(`确定要永久删除充值申请 #${requestId} (金额: 💓${amount}) 吗？\n\n⚠️ 此操作不可撤销，记录将从数据库中永久删除！`);
+            
+            if (!confirmDelete) {
+                return;
+            }
+            
+            try {
+                const response = await adminFetch(`/api/recharge-requests/${requestId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('充值申请记录已永久删除');
+                    loadRechargeRequests(); // 重新加载充值申请列表
+                } else {
+                    const errorData = await response.json();
+                    alert('删除失败: ' + (errorData.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('删除充值申请记录失败:', error);
+                alert('删除充值申请记录失败，请检查网络连接');
+            }
+        }
+        
+        // 更新充值申请统计信息
+        function updateRechargeStats() {
+            const pendingCount = rechargeRequests.filter(request => request.status === 'pending').length;
+            const approvedCount = rechargeRequests.filter(request => request.status === 'approved').length;
+            const rejectedCount = rechargeRequests.filter(request => request.status === 'rejected').length;
+            
+            document.getElementById('pendingRechargeCount').textContent = pendingCount;
+            document.getElementById('approvedRechargeCount').textContent = approvedCount;
+            document.getElementById('rejectedRechargeCount').textContent = rejectedCount;
+        }
+        
+        // 加载用户列表
+        async function loadUsers() {
+            try {
+                const response = await adminFetch('/api/admin-panel/users');
+                
+                if (response.ok) {
+                    users = await response.json();
+                    renderUsers();
+                    updateUsersStats();
+                } else {
+                    alert('加载用户列表失败');
+                }
+            } catch (error) {
+                console.error('加载用户列表失败:', error);
+                alert('加载用户列表失败，请检查服务器是否运行');
+            }
+        }
+        
+        // 渲染用户表格
+        function renderUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-orders">暂无用户</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = users.sort((a, b) => new Date(b.createdAt || '1970-01-01') - new Date(a.createdAt || '1970-01-01'))
+                .map(user => `
+                    <tr>
+                        <td style="font-family: monospace; color: #666;">${user.id}</td>
+                        <td><strong>${user.username}</strong></td>
+                        <td style="font-family: monospace; font-size: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${user.password}">
+                            ${user.password.substring(0, 30)}...
+                        </td>
+                        <td>
+                            <span class="role ${user.isAdmin ? 'admin' : 'user'}">
+                                ${user.isAdmin ? '管理员' : '普通用户'}
+                            </span>
+                        </td>
+                        <td><strong>💓${user.heartValue}</strong></td>
+                        <td>${user.createdAt ? new Date(user.createdAt).toLocaleString('zh-CN') : '未知'}</td>
+                        <td>
+                            ${getUserActionButtons(user)}
+                        </td>
+                    </tr>
+                `).join('');
+        }
+        
+        // 更新用户统计信息
+        function updateUsersStats() {
+            const totalUsers = users.length;
+            const adminUsers = users.filter(user => user.isAdmin).length;
+            const regularUsers = users.filter(user => !user.isAdmin).length;
+            const totalHeartValue = users.reduce((sum, user) => sum + (user.heartValue || 0), 0);
+            
+            document.getElementById('totalUsersCount').textContent = totalUsers;
+            document.getElementById('adminUsersCount').textContent = adminUsers;
+            document.getElementById('regularUsersCount').textContent = regularUsers;
+            document.getElementById('totalHeartValue').textContent = `💓${totalHeartValue}`;
+        }
+        
+        // 用户管理相关功能
+        let currentEditUserId = null;
+        
+        // 获取用户操作按钮
+        function getUserActionButtons(user) {
+            if (user.isAdmin) {
+                return `<span style="color: #999; font-size: 12px;">管理员账号<br/>不可操作</span>`;
+            }
+            
+            return `
+                <button class="action-btn complete" onclick="editUser('${user.id}')" style="margin: 2px;">编辑</button>
+                <button class="action-btn delete" onclick="deleteUser('${user.id}', '${user.username}')" style="margin: 2px;">删除</button>
+            `;
+        }
+        
+        // 编辑用户
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) {
+                alert('用户不存在');
+                return;
+            }
+            
+            currentEditUserId = userId;
+            
+            // 填充表单
+            document.getElementById('editUserSubtitle').textContent = `正在编辑用户：${user.username} (ID: ${user.id})`;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editPassword').value = '';
+            document.getElementById('editHeartValue').value = user.heartValue;
+            document.getElementById('editUserError').style.display = 'none';
+            
+            // 显示模态框
+            document.getElementById('editUserModal').style.display = 'block';
+            document.getElementById('editUsername').focus();
+        }
+        
+        // 关闭编辑用户模态框
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').style.display = 'none';
+            currentEditUserId = null;
+        }
+        
+        // 保存用户修改
+        async function saveUserChanges() {
+            if (!currentEditUserId) return;
+            
+            const username = document.getElementById('editUsername').value.trim();
+            const password = document.getElementById('editPassword').value.trim();
+            const heartValue = document.getElementById('editHeartValue').value.trim();
+            
+            if (!username) {
+                showEditUserError('用户名不能为空');
+                return;
+            }
+            
+            if (heartValue === '' || isNaN(parseInt(heartValue)) || parseInt(heartValue) < 0) {
+                showEditUserError('心动值必须是非负整数');
+                return;
+            }
+            
+            try {
+                const requestBody = {
+                    username,
+                    heartValue: parseInt(heartValue)
+                };
+                
+                if (password) {
+                    requestBody.password = password;
+                }
+                
+                const response = await adminFetch(`/api/admin-panel/users/${currentEditUserId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('用户信息已更新\n\n修改内容：\n' + data.changes.join('\n'));
+                    closeEditUserModal();
+                    loadUsers(); // 重新加载用户列表
+                } else {
+                    showEditUserError(data.message || '修改失败');
+                }
+            } catch (error) {
+                console.error('修改用户信息失败:', error);
+                showEditUserError('修改失败，请检查网络连接');
+            }
+        }
+        
+        // 显示编辑用户错误信息
+        function showEditUserError(message) {
+            const errorDiv = document.getElementById('editUserError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        // 删除用户
+        async function deleteUser(userId, username) {
+            const confirmDelete = confirm(`确定要删除用户 "${username}" 吗？\n\n⚠️ 此操作将：\n• 永久删除该用户账号\n• 删除该用户的所有订单记录\n• 删除该用户的所有充值申请\n• 删除该用户的所有心动值流水\n\n此操作不可撤销！`);
+            
+            if (!confirmDelete) {
+                return;
+            }
+            
+            try {
+                const response = await adminFetch(`/api/admin-panel/users/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(`用户 "${username}" 已删除\n\n${data.message}`);
+                    loadUsers(); // 重新加载用户列表
+                } else {
+                    alert('删除失败: ' + (data.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('删除用户失败:', error);
+                alert('删除用户失败，请检查网络连接');
+            }
+        }
+        
+    </script>
+</body>
+</html> 
