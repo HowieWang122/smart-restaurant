@@ -235,9 +235,10 @@ You can host the backend API and React frontend on [Render](https://render.com/)
 2. **Render 一键部署**  
    - Fork/clone 仓库后，访问 `https://render.com/deploy?repo=https://github.com/<your-account>/smart-restaurant`.
    - Render 会读取根目录的 `render.yaml`，自动创建两个免费服务：
-     - `smart-restaurant-backend`：Node.js Web Service（自动生成 `JWT_SECRET`，并把数据写入持久磁盘 `/data/storage`）。
-     - `smart-restaurant-frontend`：Static Site（构建 React 并通过 `REACT_APP_API_URL` 环变量指向后台 URL）。
+     - `smart-restaurant-backend`：Node.js Web Service（自动生成 `JWT_SECRET`，数据写在容器本地目录，免费方案会在实例重启时清空，如需持久化可升级付费磁盘或接云数据库）。
+     - `smart-restaurant-frontend`：Static Site（构建 React）。
    - 首次部署需要 5~10 分钟，完成后 Render 会给出公共访问链接（例如 `https://smart-restaurant-frontend.onrender.com`）。
+   - 前端部署完成后，到 Render Console → Frontend Service → Environment 手动添加 `REACT_APP_API_URL = https://<backend-service-host>`，再触发 “Deploy latest commit” 以加载正确的 API 地址。
 
 3. **本地 PyQt 集成端**  
    - `integrated_system.py` 仍需在有摄像头的本地设备上运行，建议将 Render 后端 URL、前端 URL 填写到内部配置或说明文档中，便于现场演示。
@@ -245,4 +246,4 @@ You can host the backend API and React frontend on [Render](https://render.com/)
 4. **CI/CD**  
    - 每次向 GitHub `main` 推送代码，Render 会自动重新构建前端与后端，无需手动发布。
 
-> 提示：Render 免费实例会在 15 分钟无访问后休眠，首次唤醒可能需要 30~60 秒。若需要长期在线，请升级至付费方案或迁移到其它常驻云服务。
+> 提示：Render 免费实例会在 15 分钟无访问后休眠，首次唤醒可能需要 30~60 秒；同时免费方案不提供持久磁盘，实例重启后 JSON 数据会重置。如需长期保存数据，建议升级付费磁盘或接云数据库。
