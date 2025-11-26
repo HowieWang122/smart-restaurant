@@ -17,7 +17,6 @@ services:
   - type: web
     name: smart-restaurant-frontend
     env: static
-    plan: free
     buildCommand: cd restaurant-ordering/frontend && npm install && npm run build
     staticPublishPath: restaurant-ordering/frontend/build
 
