@@ -54,14 +54,16 @@ async function init() {
     )
   `);
 
-  async function saveContent(name, json) {
+  async function saveContent(name, data) {
+    // 确保数据是有效的 JSON 字符串格式传递给 PostgreSQL
+    const jsonString = typeof data === 'string' ? data : JSON.stringify(data);
     await pool.query(
       `
       INSERT INTO ${TABLE_NAME}(name, content, updated_at)
-      VALUES($1, $2, NOW())
+      VALUES($1, $2::jsonb, NOW())
       ON CONFLICT(name) DO UPDATE SET content = EXCLUDED.content, updated_at = NOW()
     `,
-      [name, json]
+      [name, jsonString]
     );
   }
 
