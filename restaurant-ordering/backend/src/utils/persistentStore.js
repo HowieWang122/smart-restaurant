@@ -81,10 +81,22 @@ async function init() {
     const filePath = path.join(DATA_DIR, file);
 
     if (dbContent) {
+      // 检查数据格式是否正确
+      let validContent = dbContent;
+      
+      // 对于需要数组格式的文件，确保是数组
+      const arrayFiles = ['users.json', 'orders.json', 'recharge-requests.json', 'heart-transactions.json'];
+      if (arrayFiles.includes(file) && !Array.isArray(dbContent)) {
+        console.warn(`[persistentStore] ${file} 格式错误，期望数组，重置为空数组`);
+        validContent = [];
+        // 更新数据库中的内容
+        await saveContent(file, validContent);
+      }
+      
       await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
       await fs.promises.writeFile(
         filePath,
-        JSON.stringify(dbContent, null, 2),
+        JSON.stringify(validContent, null, 2),
         'utf8'
       );
     } else if (fs.existsSync(filePath)) {
