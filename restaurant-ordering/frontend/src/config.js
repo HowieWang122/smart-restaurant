@@ -8,6 +8,11 @@ const getApiUrl = () => {
   // 获取当前访问的主机名
   const hostname = window.location.hostname;
   
+  // 如果是 Render 部署的前端，使用 Render 后端地址
+  if (hostname.includes('onrender.com')) {
+    return 'https://smart-restaurant-backend-lii4.onrender.com';
+  }
+  
   // 如果是通过 localtunnel 访问
   if (hostname.includes('loca.lt')) {
     return 'https://restaurant-api.loca.lt';
