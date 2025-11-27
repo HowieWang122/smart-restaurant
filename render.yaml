@@ -15,6 +15,9 @@ services:
   - type: web
     name: smart-restaurant-frontend
     env: static
-    buildCommand: cd restaurant-ordering/frontend && npm install && npm run build
+    buildCommand: cd restaurant-ordering/frontend && rm -rf node_modules package-lock.json && npm install && npm run build
     staticPublishPath: restaurant-ordering/frontend/build
+    envVars:
+      - key: NODE_VERSION
+        value: 20
 
