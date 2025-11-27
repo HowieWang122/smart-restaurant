@@ -27,7 +27,13 @@ ensureFileExists(usersFilePath, JSON.stringify([]));
 const getUsers = () => {
   try {
     const data = fs.readFileSync(usersFilePath, 'utf8');
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    // 确保返回的是数组
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    console.warn('用户数据格式不正确，期望数组，得到:', typeof parsed);
+    return [];
   } catch (error) {
     console.error('Failed to read user data:', error);
     return [];
